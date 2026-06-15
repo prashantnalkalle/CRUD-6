@@ -39,7 +39,15 @@ function fetchposts(){
 
             createCards(postArr.reverse())
         }
+
+
+     spinner.classList.add('d-none')
+
     }
+
+
+    spinner.classList.add('d-none')
+
 }
 
 fetchposts()
@@ -66,7 +74,6 @@ function createCards(arr){
     });
 
     CardContainer.innerHTML = result
-    spinner.classList.add('d-none')
 
 }
 
@@ -98,11 +105,18 @@ function onsubmit(ele){
 
         }else{
             snackbar(xhr)
+            spinner.classList.add('d-none')
+
         }
+
+
+        spinner.classList.add('d-none')
+
 
     }
 
 
+    spinner.classList.add('d-none')
 
 }
 
@@ -137,7 +151,7 @@ function createNewCard(newObj,res){
 
 
 function Onedit(ele){
-    spinner.classList.remove('d-none')
+    spinner.classList.remove('d-none')  
 
     let EditId  = ele.closest('.col-md-4').id
     localStorage.setItem('EditId',EditId)
