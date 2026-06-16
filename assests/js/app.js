@@ -19,7 +19,7 @@ function snackbar(msg,icon){
     swal.fire({
         title : msg,
         icon : icon,
-        timer : 3000
+        timer : 2000
     })
 }
 
@@ -38,16 +38,12 @@ function fetchposts(){
             postArr = JSON.parse(xhr.response)
 
             createCards(postArr.reverse())
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
         }
-
-
      spinner.classList.add('d-none')
-
     }
-
-
-    spinner.classList.add('d-none')
-
 }
 
 fetchposts()
@@ -57,7 +53,7 @@ function createCards(arr){
     arr.forEach(ele => {
         result+=`<div class="col-md-4 my-4" id='${ele.id}'>
 					<div class="card h-100">
-						<div class="card-header bg-primary text-white">
+						<div class="card-header bg-primary text-white" data-toggle="tooltip" data-placement="top" title="${ele.title}">
 							<h2>
                                 ${ele.title}
 							</h2>
@@ -102,22 +98,16 @@ function onsubmit(ele){
             let res = JSON.parse(xhr.response)
 
             createNewCard(newObj,res)
+                        $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
 
         }else{
-            snackbar(xhr)
-            spinner.classList.add('d-none')
+            snackbar(xhr.status)
 
         }
-
-
         spinner.classList.add('d-none')
-
-
     }
-
-
-    spinner.classList.add('d-none')
-
 }
 
 
@@ -127,7 +117,7 @@ function createNewCard(newObj,res){
     div.id = res.id
 
     div.innerHTML =`<div class="card h-100">
-						<div class="card-header bg-primary text-white">
+						<div class="card-header bg-primary text-white" data-toggle="tooltip" data-placement="top" title="${newObj.title}">
 							<h2>
                                 ${newObj.title}
 							</h2>
@@ -144,7 +134,6 @@ function createNewCard(newObj,res){
     CardContainer.prepend(div)
 
     inputform.reset()
-    spinner.classList.add('d-none')
 
     snackbar(`The New Post Id ${res.id} is Added Successfully!!`,'success')
 }
@@ -173,6 +162,10 @@ function Onedit(ele){
 
             Addpost.classList.add('d-none')
             Updatepost.classList.remove('d-none')
+            inputform.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
         }else{
             snackbar(xhr,'error')
         }
@@ -185,9 +178,7 @@ function Onedit(ele){
 
 
 function onupdate(){
-        spinner.classList.remove('d-none')
-
-
+    spinner.classList.remove('d-none')
     let updateId = localStorage.getItem('EditId')
 
     let udpateObj ={
@@ -225,23 +216,26 @@ function onupdate(){
             Updatepost.classList.add('d-none')
             snackbar(`The Post Id ${updateId} is Updated Successfully!!`,'success')
 
+            div.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            div.classList.add('highlight');
+
+            setTimeout(() => {
+                div.classList.remove('highlight');
+            }, 4000);
 
         }else{
             snackbar(xhr,'error')
         }
-
         spinner.classList.add('d-none')
-
     }
-
-
-
-
 }
 
 
 function OnRemove(ele){
-    spinner.classList.add('d-none')
     let removeId = ele.closest('.col-md-4').id
 
     Swal.fire({
@@ -253,46 +247,31 @@ function OnRemove(ele){
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!"
     }).then((result) => {
-    if (result.isConfirmed){
-        let remove_Url = `${Base_Url}/posts/${removeId}`
+        if (result.isConfirmed){
+        spinner.classList.remove('d-none')
 
-        let xhr = new XMLHttpRequest()
+            let remove_Url = `${Base_Url}/posts/${removeId}`
 
-        xhr.open('DELETE',remove_Url)
+            let xhr = new XMLHttpRequest()
 
-        xhr.send(null)
+            xhr.open('DELETE',remove_Url)
 
-        xhr.onload = function (){
-            if(xhr.status >= 200 && xhr.status <=299){
+            xhr.send(null)
 
-                ele.closest('.col-md-4').remove()
+            xhr.onload = function (){
+                if(xhr.status >= 200 && xhr.status <=299){
 
-             snackbar(`The Post Id ${removeId} is Removed Successfully!!`,'success')
+                    ele.closest('.col-md-4').remove()
+
+                snackbar(`The Post Id ${removeId} is Removed Successfully!!`,'success')
+
+                }
+                spinner.classList.add('d-none')
 
             }
         }
-    }
     });
-
-
-
-
-
-
-
-
-
-
-   
-
-
 }
-
-
-
-
-
-
 
 inputform.addEventListener('submit',onsubmit)
 Updatepost.addEventListener('click',onupdate)
